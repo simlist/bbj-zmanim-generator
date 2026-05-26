@@ -18,11 +18,12 @@ def main(page: ft.Page) -> None:
         last_date=date.today() + timedelta(days=365 * 5),
         start_value=date.today(),
         end_value=date.today() + timedelta(days=7),
+        confirm_text='Accept',
     )
 
     def on_pick_range(_e: ft.ControlEvent) -> None:
-        date_range_picker.open = True
-        page.update()
+        if not date_range_picker.open:
+            page.show_dialog(date_range_picker)
 
     date_range_field = ft.TextField(
         label='Date Range',
@@ -43,7 +44,6 @@ def main(page: ft.Page) -> None:
         page.update()
 
     date_range_picker.on_change = on_date_change
-    page.overlay.append(date_range_picker)
 
     file_picker = ft.FilePicker()
     page.services.append(file_picker)
