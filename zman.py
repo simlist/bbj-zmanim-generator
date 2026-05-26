@@ -95,5 +95,5 @@ def generate_excel(rows: list[dict], save_path: str) -> None:
         ws.column_dimensions[col[0].column_letter].width = max_len + 2
         if col[0].value == 'Date':
             for cell in col[1:]:
-                cell.alignment = Alignment(vertical='top')
+                cell.alignment = Alignment(vertical='top', wrap_text=True)
     wb.save(save_path)
