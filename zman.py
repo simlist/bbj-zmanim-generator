@@ -66,8 +66,6 @@ def generate_excel(rows: list[dict], save_path: str) -> None:
         columns=[
             "_date",
             "Date",
-            # "Shkia",
-            # "Plag HaMincha",
             "Early Candle Lighting",
             "Late Candle Lighting",
             "Mincha",
