@@ -60,45 +60,36 @@ def compute_zmanim(d: date) -> dict:
     return data
 
 
-_ZMAN_COLUMNS = [
-    '_date',
-    'Date',
-    'Early Candle Lighting',
-    'Late Candle Lighting',
-    'Mincha',
-    'Talmud Class',
-    'Shabbos Concludes',
-    'Thursday Mincha',
-]
-
-
-def compute_dataframe(rows: list[dict]) -> pd.DataFrame:
-    df = pd.DataFrame(rows, columns=_ZMAN_COLUMNS)
-    return (
-        df.melt(id_vars=['_date', 'Date'], var_name='Zman', value_name='Time')
-        .dropna(subset=['Time'])
-        .sort_values(by=['_date'])
-        .reset_index(drop=True)
-    )
-
-
 def generate_excel(rows: list[dict], save_path: str) -> None:
+    df = pd.DataFrame(
+        rows,
+        columns=[
+            "_date",
+            "Date",
+            # "Shkia",
+            # "Plag HaMincha",
+            "Early Candle Lighting",
+            "Late Candle Lighting",
+            "Mincha",
+            "Talmud Class",
+            "Shabbos Concludes",
+            "Thursday Mincha",
+        ]
+    )
     df = (
-        compute_dataframe(rows)
-        .drop(columns=['_date'])
-        .set_index(['Date', 'Zman'])
+        df.melt(id_vars=["_date", "Date"], var_name="Zman", value_name="Time")
+        .dropna(subset=["Time"])
+        .sort_values(by=["_date"])
+        .drop(columns=["_date"])
+        .set_index(["Date", "Zman"])
     )
 
     df.to_excel(save_path, index=True, engine='openpyxl')
 
     from openpyxl import load_workbook
-    from openpyxl.styles import Alignment
     wb = load_workbook(save_path)
     ws = wb.active
     for col in ws.columns:
         max_len = max((len(str(cell.value)) if cell.value is not None else 0) for cell in col)
         ws.column_dimensions[col[0].column_letter].width = max_len + 2
-        if col[0].value == 'Date':
-            for cell in col[1:]:
-                cell.alignment = Alignment(vertical='top', wrap_text=True)
     wb.save(save_path)
