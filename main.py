@@ -1,12 +1,12 @@
 import flet as ft
 from datetime import date, timedelta
-from zman import get_weekend_dates, compute_zmanim, generate_excel
+from zman import get_weekend_dates, compute_zmanim, generate_excel, compute_dataframe
 
 
 def main(page: ft.Page) -> None:
     page.title = 'Zmanim Generator'
-    page.window.width = 420
-    page.window.height = 380
+    page.window.width = 520
+    page.window.height = 620
 
     state: dict[str, date | None] = {'start': None, 'end': None}
 
@@ -33,6 +33,16 @@ def main(page: ft.Page) -> None:
         expand=True,
     )
 
+    data_table = ft.DataTable(
+        columns=[
+            ft.DataColumn(ft.Text('Date')),
+            ft.DataColumn(ft.Text('Zman')),
+            ft.DataColumn(ft.Text('Time')),
+        ],
+        rows=[],
+        column_spacing=16,
+    )
+
     def on_date_change(e: ft.ControlEvent) -> None:
         if not e.control.start_value or not e.control.end_value:
             return
@@ -41,6 +51,20 @@ def main(page: ft.Page) -> None:
         s, en = state['start'], state['end']
         date_range_field.value = f"{s.strftime('%Y-%m-%d')}  →  {en.strftime('%Y-%m-%d')}"
         generate_btn.disabled = False
+        dates = get_weekend_dates(s, en)
+        rows = [compute_zmanim(d) for d in dates]
+        df = compute_dataframe(rows)
+        seen: set[str] = set()
+        rows_out: list[ft.DataRow] = []
+        for _, row in df.iterrows():
+            date_label = row['Date'] if row['Date'] not in seen else ''
+            seen.add(row['Date'])
+            rows_out.append(ft.DataRow(cells=[
+                ft.DataCell(ft.Text(date_label)),
+                ft.DataCell(ft.Text(row['Zman'])),
+                ft.DataCell(ft.Text(row['Time'])),
+            ]))
+        data_table.rows = rows_out
         page.update()
 
     date_range_picker.on_change = on_date_change
@@ -93,11 +117,21 @@ def main(page: ft.Page) -> None:
                         ft.Row(controls=[date_range_field]),
                         ft.Divider(),
                         ft.Row(controls=[generate_btn], spacing=16),
+                        ft.Container(
+                            content=ft.ListView(
+                                controls=[data_table],
+                                expand=True,
+                            ),
+                            expand=True,
+                        ),
                     ],
                     spacing=16,
+                    expand=True,
                 ),
                 padding=20,
-            )
+                expand=True,
+            ),
+            expand=True,
         )
     )
 

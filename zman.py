@@ -60,28 +60,33 @@ def compute_zmanim(d: date) -> dict:
     return data
 
 
-def generate_excel(rows: list[dict], save_path: str) -> None:
-    df = pd.DataFrame(
-        rows,
-        columns=[
-            "_date",
-            "Date",
-            # "Shkia",
-            # "Plag HaMincha",
-            "Early Candle Lighting",
-            "Late Candle Lighting",
-            "Mincha",
-            "Talmud Class",
-            "Shabbos Concludes",
-            "Thursday Mincha",
-        ]
+_ZMAN_COLUMNS = [
+    '_date',
+    'Date',
+    'Early Candle Lighting',
+    'Late Candle Lighting',
+    'Mincha',
+    'Talmud Class',
+    'Shabbos Concludes',
+    'Thursday Mincha',
+]
+
+
+def compute_dataframe(rows: list[dict]) -> pd.DataFrame:
+    df = pd.DataFrame(rows, columns=_ZMAN_COLUMNS)
+    return (
+        df.melt(id_vars=['_date', 'Date'], var_name='Zman', value_name='Time')
+        .dropna(subset=['Time'])
+        .sort_values(by=['_date'])
+        .reset_index(drop=True)
     )
+
+
+def generate_excel(rows: list[dict], save_path: str) -> None:
     df = (
-        df.melt(id_vars=["_date", "Date"], var_name="Zman", value_name="Time")
-        .dropna(subset=["Time"])
-        .sort_values(by=["_date"])
-        .drop(columns=["_date"])
-        .set_index(["Date", "Zman"])
+        compute_dataframe(rows)
+        .drop(columns=['_date'])
+        .set_index(['Date', 'Zman'])
     )
 
     df.to_excel(save_path, index=True, engine='openpyxl')
