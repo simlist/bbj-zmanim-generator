@@ -11,6 +11,7 @@ def main(page: ft.Page) -> None:
     state: dict[str, date | None] = {'start': None, 'end': None}
 
     generate_btn = ft.Button(content=ft.Text('Generate Excel'), disabled=True)
+    clear_btn = ft.Button(content=ft.Text('Clear'), disabled=True)
 
     date_range_picker = ft.DateRangePicker(
         current_date=date.today(),
@@ -51,6 +52,7 @@ def main(page: ft.Page) -> None:
         s, en = state['start'], state['end']
         date_range_field.value = f"{s.strftime('%Y-%m-%d')}  →  {en.strftime('%Y-%m-%d')}"
         generate_btn.disabled = False
+        clear_btn.disabled = False
         dates = get_weekend_dates(s, en)
         rows = [compute_zmanim(d) for d in dates]
         df = compute_dataframe(rows)
@@ -101,7 +103,19 @@ def main(page: ft.Page) -> None:
         generate_excel(rows, path)
         show_snack(f'Saved to {path}')
 
-    generate_btn.on_click = on_generate
+    def on_clear(_e: ft.ControlEvent) -> None:
+        state['start'] = None
+        state['end'] = None
+        date_range_field.value = ''
+        date_range_picker.start_value = date.today()
+        date_range_picker.end_value = date.today() + timedelta(days=7)
+        data_table.rows = []
+        generate_btn.disabled = True
+        clear_btn.disabled = True
+        page.update()
+
+    generate_btn.on_click = lambda e: page.run_task(on_generate, e)
+    clear_btn.on_click = on_clear
 
     page.add(
         ft.SafeArea(
@@ -116,7 +130,7 @@ def main(page: ft.Page) -> None:
                         ft.Divider(),
                         ft.Row(controls=[date_range_field]),
                         ft.Divider(),
-                        ft.Row(controls=[generate_btn], spacing=16),
+                        ft.Row(controls=[generate_btn, clear_btn], spacing=16),
                         ft.Container(
                             content=ft.ListView(
                                 controls=[data_table],
