@@ -17,6 +17,7 @@ LATE_CANDLE_LIGHTING_OFFSET = timedelta(minutes=-20)
 MINCHA_OFFSET = timedelta(minutes=-15)
 TALMUD_CLASS_OFFSET = timedelta(minutes=-90)
 SHABBOS_CONCLUDES_OFFSET = timedelta(minutes=45)
+SHABBOS_MINCHA_OFFSET = timedelta(minutes=-30)
 
 
 def get_weekend_dates(start: date, end: date) -> list[date]:
@@ -57,6 +58,9 @@ def compute_zmanim(d: date) -> dict:
             Timestamp(cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
         )
     elif weekday == 5:  # Shabbos
+        data['Mincha'] = _fmt(
+            Timestamp(cal.shkia()).ceil('min') + SHABBOS_MINCHA_OFFSET
+        )
         data['Talmud Class'] = _fmt(
             Timestamp(cal.shkia()).ceil('min') + TALMUD_CLASS_OFFSET
         )
@@ -83,8 +87,8 @@ def compute_dataframe(rows: list[dict]) -> pd.DataFrame:
             '_date',
             'Date',
             'Early Candle Lighting',
-            'Late Candle Lighting',
             'Mincha',
+            'Late Candle Lighting',
             'Talmud Class',
             'Shabbos Concludes',
             'Thursday Mincha',
