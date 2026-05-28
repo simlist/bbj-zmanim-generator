@@ -150,5 +150,9 @@ def main(page: ft.Page) -> None:
     )
 
 
-if __name__ == '__main__':
+def run() -> None:
     ft.run(main)
+
+
+if __name__ == '__main__':
+    run()

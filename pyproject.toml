@@ -12,6 +12,9 @@ dependencies = [
     "zmanim>=0.3.1",
 ]
 
+[project.scripts]
+zmanim-blanks = "main:run"
+
 [dependency-groups]
 dev = [
     "pytest>=9.0.3",
