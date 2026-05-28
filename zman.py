@@ -4,13 +4,19 @@ from zmanim.util.geo_location import GeoLocation
 from zmanim.zmanim_calendar import ZmanimCalendar
 from pyluach.dates import HebrewDate
 import pandas as pd
+from pandas import Timestamp
 
 LOCATION = GeoLocation(
-    "Savannah, GA",
+    'Savannah, GA',
     32.026,
     -81.108,
-    "America/New_York"
+    'America/New_York'
 )
+
+LATE_CANDLE_LIGHTING_OFFSET = timedelta(minutes=-20)
+MINCHA_OFFSET = timedelta(minutes=-15)
+TALMUD_CLASS_OFFSET = timedelta(minutes=-90)
+SHABBOS_CONCLUDES_OFFSET = timedelta(minutes=45)
 
 
 def get_weekend_dates(start: date, end: date) -> list[date]:
@@ -26,7 +32,7 @@ def get_weekend_dates(start: date, end: date) -> list[date]:
 def _fmt(dt) -> str:
     if dt is None:
         return "N/A"
-    return dt.strftime('%#I:%M:%S %p')
+    return dt.strftime('%#I:%M %p')
 
 
 def compute_zmanim(d: date) -> dict:
@@ -41,46 +47,60 @@ def compute_zmanim(d: date) -> dict:
         # "Plag HaMincha": _fmt(cal.plag_hamincha()),
     }
     if weekday == 4:  # Friday
-        data["Early Candle Lighting"] = _fmt(cal.plag_hamincha())
-        data["Late Candle Lighting"] = _fmt(
-            cal.shkia() - timedelta(minutes=20)
+        data['Early Candle Lighting'] = _fmt(
+            Timestamp(cal.plag_hamincha()).ceil('min')
         )
-        data['Mincha'] = _fmt(cal.plag_hamincha() - timedelta(minutes=15))
+        data['Late Candle Lighting'] = _fmt(
+            Timestamp(cal.shkia()).floor('min') + LATE_CANDLE_LIGHTING_OFFSET
+        )
+        data['Mincha'] = _fmt(
+            Timestamp(cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
+        )
     elif weekday == 5:  # Shabbos
-        data['Talmud Class'] = _fmt(cal.shkia() - timedelta(minutes=90))
-        data['Shabbos Concludes'] = _fmt(cal.shkia() + timedelta(minutes=45))
+        data['Talmud Class'] = _fmt(
+            Timestamp(cal.shkia()).ceil('min') + TALMUD_CLASS_OFFSET
+        )
+        data['Shabbos Concludes'] = _fmt(
+            Timestamp(cal.shkia()).ceil('min') + SHABBOS_CONCLUDES_OFFSET
+        )
     elif weekday == 6:  # Sunday
         thurs_cal = ZmanimCalendar(
             geo_location=LOCATION, date=d + timedelta(days=4)
         )
-        data['Mincha'] = _fmt(cal.plag_hamincha() - timedelta(minutes=15))
+        data['Mincha'] = _fmt(
+            Timestamp(cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
+        )
         data['Thursday Mincha'] = _fmt(
-            thurs_cal.plag_hamincha() - timedelta(minutes=15)
+            Timestamp(thurs_cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
         )
     return data
 
 
-def generate_excel(rows: list[dict], save_path: str) -> None:
+def compute_dataframe(rows: list[dict]) -> pd.DataFrame:
     df = pd.DataFrame(
         rows,
         columns=[
-            "_date",
-            "Date",
-            "Early Candle Lighting",
-            "Late Candle Lighting",
-            "Mincha",
-            "Talmud Class",
-            "Shabbos Concludes",
-            "Thursday Mincha",
+            '_date',
+            'Date',
+            'Early Candle Lighting',
+            'Late Candle Lighting',
+            'Mincha',
+            'Talmud Class',
+            'Shabbos Concludes',
+            'Thursday Mincha',
         ]
     )
-    df = (
-        df.melt(id_vars=["_date", "Date"], var_name="Zman", value_name="Time")
-        .dropna(subset=["Time"])
-        .sort_values(by=["_date"])
-        .drop(columns=["_date"])
-        .set_index(["Date", "Zman"])
+    return (
+        df.melt(id_vars=['_date', 'Date'], var_name='Zman', value_name='Time')
+        .dropna(subset=['Time'])
+        .sort_values(by=['_date'])
+        .drop(columns=['_date'])
+        .reset_index(drop=True)
     )
+
+
+def generate_excel(rows: list[dict], save_path: str) -> None:
+    df = compute_dataframe(rows).set_index(['Date', 'Zman'])
 
     df.to_excel(save_path, index=True, engine='openpyxl')
 
