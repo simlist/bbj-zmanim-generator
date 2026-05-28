@@ -109,9 +109,12 @@ def generate_excel(rows: list[dict], save_path: str) -> None:
     df.to_excel(save_path, index=True, engine='openpyxl')
 
     from openpyxl import load_workbook
+    from openpyxl.styles import Alignment
     wb = load_workbook(save_path)
     ws = wb.active
     for col in ws.columns:
         max_len = max((len(str(cell.value)) if cell.value is not None else 0) for cell in col)
         ws.column_dimensions[col[0].column_letter].width = max_len + 2
+    for cell in ws['A']:
+        cell.alignment = Alignment(vertical='top', wrap_text=True)
     wb.save(save_path)
