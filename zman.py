@@ -87,9 +87,9 @@ def compute_dataframe(rows: list[dict]) -> pd.DataFrame:
             '_date',
             'Date',
             'Early Candle Lighting',
+            'Talmud Class',
             'Mincha',
             'Late Candle Lighting',
-            'Talmud Class',
             'Shabbos Concludes',
             'Thursday Mincha',
         ]
@@ -97,7 +97,7 @@ def compute_dataframe(rows: list[dict]) -> pd.DataFrame:
     return (
         df.melt(id_vars=['_date', 'Date'], var_name='Zman', value_name='Time')
         .dropna(subset=['Time'])
-        .sort_values(by=['_date'])
+        .sort_values(by=['_date'], kind='stable')
         .drop(columns=['_date'])
         .reset_index(drop=True)
     )
