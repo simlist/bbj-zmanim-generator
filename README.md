@@ -11,13 +11,7 @@ A desktop app for generating printable zmanim (Jewish halachic times) schedules 
 
 ## Installation
 
-Requires Python 3.13. Install with pip:
-
-```cmd
-pip install .
-```
-
-Or with [uv](https://docs.astral.sh/uv/):
+Requires Python 3.13 and [uv](https://docs.astral.sh/uv/).
 
 ```cmd
 uv sync
@@ -26,7 +20,7 @@ uv sync
 ## Running
 
 ```cmd
-zmanim-blanks
+uv run flet run
 ```
 
 ## Building
@@ -34,7 +28,7 @@ zmanim-blanks
 To publish a standalone Windows executable:
 
 ```cmd
-flet build windows
+uv run flet build windows
 ```
 
 Flutter will be downloaded and installed automatically if not already present. See the [Flet packaging docs](https://flet.dev/docs/publish/windows/) for prerequisites (Visual Studio with the Desktop development with C++ workload is required).
