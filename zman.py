@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from typing import Literal
 
 from zmanim.util.geo_location import GeoLocation
 from zmanim.zmanim_calendar import ZmanimCalendar
@@ -31,7 +32,7 @@ def get_weekend_dates(start: date, end: date) -> list[date]:
 
 
 def _round_offset(
-    dt, rounding: str, offset: timedelta = timedelta(0)
+    dt, rounding: Literal['ceil', 'floor'], offset: timedelta = timedelta(0)
 ) -> Timestamp:
     ts = Timestamp(dt)
     rounded = ts.ceil('min') if rounding == 'ceil' else ts.floor('min')
