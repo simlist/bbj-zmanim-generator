@@ -30,6 +30,14 @@ def get_weekend_dates(start: date, end: date) -> list[date]:
     return days
 
 
+def _round_offset(
+    dt, rounding: str, offset: timedelta = timedelta(0)
+) -> Timestamp:
+    ts = Timestamp(dt)
+    rounded = ts.ceil('min') if rounding == 'ceil' else ts.floor('min')
+    return rounded + offset
+
+
 def _fmt(dt) -> str:
     if dt is None:
         return "N/A"
@@ -49,33 +57,33 @@ def compute_zmanim(d: date) -> dict:
     }
     if weekday == 4:  # Friday
         data['Early Candle Lighting'] = _fmt(
-            Timestamp(cal.plag_hamincha()).ceil('min')
+            _round_offset(cal.plag_hamincha(), 'ceil')
         )
         data['Late Candle Lighting'] = _fmt(
-            Timestamp(cal.shkia()).floor('min') + LATE_CANDLE_LIGHTING_OFFSET
+            _round_offset(cal.shkia(), 'floor', LATE_CANDLE_LIGHTING_OFFSET)
         )
         data['Mincha'] = _fmt(
-            Timestamp(cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
+            _round_offset(cal.plag_hamincha(), 'ceil', MINCHA_OFFSET)
         )
     elif weekday == 5:  # Shabbos
         data['Mincha'] = _fmt(
-            Timestamp(cal.shkia()).ceil('min') + SHABBOS_MINCHA_OFFSET
+            _round_offset(cal.shkia(), 'ceil', SHABBOS_MINCHA_OFFSET)
         )
         data['Talmud Class'] = _fmt(
-            Timestamp(cal.shkia()).ceil('min') + TALMUD_CLASS_OFFSET
+            _round_offset(cal.shkia(), 'ceil', TALMUD_CLASS_OFFSET)
         )
         data['Shabbos Concludes'] = _fmt(
-            Timestamp(cal.shkia()).ceil('min') + SHABBOS_CONCLUDES_OFFSET
+            _round_offset(cal.shkia(), 'ceil', SHABBOS_CONCLUDES_OFFSET)
         )
     elif weekday == 6:  # Sunday
         thurs_cal = ZmanimCalendar(
             geo_location=LOCATION, date=d + timedelta(days=4)
         )
         data['Mincha'] = _fmt(
-            Timestamp(cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
+            _round_offset(cal.plag_hamincha(), 'ceil', MINCHA_OFFSET)
         )
         data['Thursday Mincha'] = _fmt(
-            Timestamp(thurs_cal.plag_hamincha()).ceil('min') + MINCHA_OFFSET
+            _round_offset(thurs_cal.plag_hamincha(), 'ceil', MINCHA_OFFSET)
         )
     return data
 
