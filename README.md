@@ -1,4 +1,4 @@
-# Zmanim Blanks
+# BBJ Zmanim Generator
 
 A desktop app for generating printable zmanim (Jewish halachic times) schedules for the needs of the BBJ Synagogue. Given a date range, it produces forms with times for davening, Shabbos, and other halachic events and allows for exporting to excel.
 

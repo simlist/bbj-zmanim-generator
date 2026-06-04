@@ -23,6 +23,41 @@ wheels = [
 ]
 
 [[package]]
+name = "bbj-zmanim-generator"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "flet" },
+    { name = "openpyxl" },
+    { name = "pandas" },
+    { name = "pyluach" },
+    { name = "zmanim" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "flet", specifier = ">=0.85.1" },
+    { name = "openpyxl", specifier = ">=3.1.5" },
+    { name = "pandas", specifier = ">=3.0.3" },
+    { name = "pyluach", specifier = ">=2.3.0" },
+    { name = "zmanim", specifier = ">=0.3.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=9.0.3" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "ruff", specifier = ">=0.15.15" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.5.20"
 source = { registry = "https://pypi.org/simple" }
@@ -495,39 +530,4 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/02/b0/4c47822ec1949abb50b3bf7fc0c78056762a620f89c49ee07039428a99d0/zmanim-0.3.1.tar.gz", hash = "sha256:10883ae3f0903175d5f038ef5a12fba37bec71e0ea1713712720c77b3926d2b0", size = 38587, upload-time = "2020-11-05T15:46:36.336Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/de/94/7db0710655b65150b8c2c6c31ba3539d642809ff235652f8e7aefc60ed3f/zmanim-0.3.1-py3-none-any.whl", hash = "sha256:ae3cf6d8878d7a50ed6beb76c6da7abca5063b02f70e781519d705b5cc317d79", size = 42330, upload-time = "2020-11-05T15:46:35.062Z" },
-]
-
-[[package]]
-name = "zmanim-blanks"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "flet" },
-    { name = "openpyxl" },
-    { name = "pandas" },
-    { name = "pyluach" },
-    { name = "zmanim" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "flet", specifier = ">=0.85.1" },
-    { name = "openpyxl", specifier = ">=3.1.5" },
-    { name = "pandas", specifier = ">=3.0.3" },
-    { name = "pyluach", specifier = ">=2.3.0" },
-    { name = "zmanim", specifier = ">=0.3.1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=9.0.3" },
-    { name = "pytest-cov", specifier = ">=7.1.0" },
-    { name = "ruff", specifier = ">=0.15.15" },
 ]
