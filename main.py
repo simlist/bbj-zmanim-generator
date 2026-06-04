@@ -20,6 +20,7 @@ def main(page: ft.Page) -> None:
         start_value=date.today(),
         end_value=date.today() + timedelta(days=7),
         confirm_text='Accept',
+        save_text='Accept',
     )
 
     def on_pick_range(_e: ft.ControlEvent) -> None:
