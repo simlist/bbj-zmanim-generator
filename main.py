@@ -21,6 +21,7 @@ def main(page: ft.Page) -> None:
         end_value=date.today() + timedelta(days=7),
         confirm_text='Accept',
         save_text='Accept',
+        switch_to_input_icon=ft.Icons.KEYBOARD,
     )
 
     def on_pick_range(_e: ft.ControlEvent) -> None:
