@@ -14,6 +14,8 @@ A desktop app for generating printable zmanim (Jewish halachic times) schedules 
 Requires Python 3.13 and [uv](https://docs.astral.sh/uv/).
 
 ```cmd
+git clone https://github.com/simlist/bbj-zmanim-generator.git
+cd zmanim-blanks
 uv sync
 ```
 
